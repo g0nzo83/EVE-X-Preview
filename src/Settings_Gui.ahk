@@ -481,7 +481,7 @@
             }
         }
 
-        Hotkeys.Push This.S_Gui.Add("Text", " x115 yp+130 section", "Charactername:")
+        Hotkeys.Push This.S_Gui.Add("Text", " x115 yp+130 section", "Character Name:")
         HKCharList := This.S_Gui.Add("Edit", " xp-30 yp20 w180 h350 -Wrap vHotkeyCharList", Charlist)
         Hotkeys.Push HKCharList
         HKCharList.OnEvent("Change", (obj, *) => EventHandler(obj))

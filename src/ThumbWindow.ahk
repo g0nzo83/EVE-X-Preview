@@ -328,36 +328,40 @@ Class ThumbWindow extends Propertys {
        }
    }
 
-   ShowThumb(EVEWindowHwnd, HideOrShow) {
-       try
-           title := WinGetTitle("Ahk_Id " EVEWindowHwnd)
-       catch
-           title := 0
-       if (!This.Thumbnail_visibility.Has(This.CleanTitle(title))) {
-           if (HideOrShow = "Show") {
-               for k, v in This.ThumbWindows.%EVEWindowHwnd% {
-                   if (k = "Thumbnail")
-                       continue
-                   if (k = "Border" && !This.ShowAllColoredBorders) || (k = "TextOverlay" && !This.ShowThumbnailTextOverlay)
-                       continue
+    ShowThumb(EVEWindowHwnd, HideOrShow) {
+        try
+            title := WinGetTitle("Ahk_Id " EVEWindowHwnd)
+        catch
+            title := 0
+        if (!This.Thumbnail_visibility.Has(This.CleanTitle(title))) {
+            if (HideOrShow = "Show") {
+                for k, v in This.ThumbWindows.%EVEWindowHwnd% {
+                    if (k = "Thumbnail")
+                        continue
+                    if (k = "Border" && !This.ShowAllColoredBorders)
+                        continue
+                    
+                    This.ThumbWindows.%EVEWindowHwnd%[k].Show("NoActivate")
 
-                   This.ThumbWindows.%EVEWindowHwnd%[k].Show("NoActivate")
-                   This.ThumbWindows.%EVEWindowHwnd%["TextOverlay"].Show("NoActivate")
-               }
-           }
-           else {
-               if (This.ThumbWindows.%EVEWindowHwnd%["Window"].Title = "") {
-                   This.ThumbWindows.%EVEWindowHwnd%["Border"].Show("Hide")
-                   return
-               }
-               for k, v in This.ThumbWindows.%EVEWindowHwnd% {
-                   if (k = "Thumbnail")
-                       continue
-                   This.ThumbWindows.%EVEWindowHwnd%[k].Show("Hide")
-               }
-           }
-       }
-   }
+                    if (k = "TextOverlay" && !This.ShowThumbnailTextOverlay)
+                        This.ThumbWindows.%EVEWindowHwnd%["TextOverlay"].Show("Hide")
+                    else if (k = "TextOverlay" && This.ShowThumbnailTextOverlay)
+                        This.ThumbWindows.%EVEWindowHwnd%["TextOverlay"].Show("NoActivate")
+                }
+            }
+            else {
+                if (This.ThumbWindows.%EVEWindowHwnd%["Window"].Title = "") {
+                    This.ThumbWindows.%EVEWindowHwnd%["Border"].Show("Hide")
+                    return
+                }
+                for k, v in This.ThumbWindows.%EVEWindowHwnd% {
+                    if (k = "Thumbnail")
+                        continue
+                    This.ThumbWindows.%EVEWindowHwnd%[k].Show("Hide")
+                }
+            }
+        }
+    }
 
 
    Update_Thumb(AllOrOne := true, ThumbHwnd?) {
