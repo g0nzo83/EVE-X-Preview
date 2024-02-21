@@ -225,108 +225,108 @@ Class ThumbWindow extends Propertys {
     }
 
 
-   ;   wparam, lparam, msg, hwnd
-   Mouse_ResizeThumb(wparam, lparam, msg, hwnd) {
-       This.Resize := 0
-       while (GetKeyState("LButton") && GetKeyState("RButton")) {
-           Sleep 10
-           if !(This.Resize) {
-               WinGetPos(&Rx, &Ry, &Width, &Height, hwnd)
-               MouseGetPos(&Bx, &By)
-               This.Resize := 1
-           }
-           MouseGetPos(&DragX, &DragY)
-           x := DragX - Bx, Wn := Width + x
-           y := DragY - BY, Wh := Height + y
+    ;   wparam, lparam, msg, hwnd
+    Mouse_ResizeThumb(wparam, lparam, msg, hwnd) {
+        This.Resize := 0
+        while (GetKeyState("LButton") && GetKeyState("RButton")) {
+            Sleep 10
+            if !(This.Resize) {
+                WinGetPos(&Rx, &Ry, &Width, &Height, hwnd)
+                MouseGetPos(&Bx, &By)
+                This.Resize := 1
+            }
+            MouseGetPos(&DragX, &DragY)
+            x := DragX - Bx, Wn := Width + x
+            y := DragY - BY, Wh := Height + y
 
 
-           ;ensures that the minimum size cannot be undershot
-           if (Wn < This.ThumbnailMinimumSize["width"]) {
-               Wn := This.ThumbnailMinimumSize["width"]
-           }
-           if (Wh < This.ThumbnailMinimumSize["height"]) {
-               Wh := This.ThumbnailMinimumSize["height"]
-           }
+            ;ensures that the minimum size cannot be undershot
+            if (Wn < This.ThumbnailMinimumSize["width"]) {
+                Wn := This.ThumbnailMinimumSize["width"]
+            }
+            if (Wh < This.ThumbnailMinimumSize["height"]) {
+                Wh := This.ThumbnailMinimumSize["height"]
+            }
 
-           for k, v in This.ThumbWindows.%This.ThumbHwnd_EvEHwnd[hwnd]% {
-               WinMove(, , Wn, Wh, v.hwnd)
-           }
-           This.Update_Thumb(false, hwnd)
-           This.BorderSize(This.ThumbWindows.%This.ThumbHwnd_EvEHwnd[hwnd]%["Window"].Hwnd, This.ThumbWindows.%This.ThumbHwnd_EvEHwnd[hwnd]%["Border"].Hwnd)
+            for k, v in This.ThumbWindows.%This.ThumbHwnd_EvEHwnd[hwnd]% {
+                WinMove(, , Wn, Wh, v.hwnd)
+            }
+            This.Update_Thumb(false, hwnd)
+            This.BorderSize(This.ThumbWindows.%This.ThumbHwnd_EvEHwnd[hwnd]%["Window"].Hwnd, This.ThumbWindows.%This.ThumbHwnd_EvEHwnd[hwnd]%["Border"].Hwnd)
 
-           if (!GetKeyState("LCtrl")) {
-               for ThumbIDs in This.ThumbHwnd_EvEHwnd {
-                   if (ThumbIDs == This.ThumbHwnd_EvEHwnd[hwnd])
-                       continue
-                   for k, v in This.ThumbWindows.%This.ThumbHwnd_EvEHwnd[ThumbIDs]% {
-                       if k = "Window"
-                           window := v.Hwnd
-                       WinMove(, , Wn, Wh, v.Hwnd)
-                       if (k = "Border") {
-                           border := v.Hwnd
-                       }
-                       if (k = "TextOverlay") {
-                           TextOverlay := v.Hwnd
-                           ;WinMove(,,Wn,Wh, v.Hwnd )
-                           continue
-                       }
+            if (!GetKeyState("LCtrl")) {
+                for ThumbIDs in This.ThumbHwnd_EvEHwnd {
+                    if (ThumbIDs == This.ThumbHwnd_EvEHwnd[hwnd])
+                        continue
+                    for k, v in This.ThumbWindows.%This.ThumbHwnd_EvEHwnd[ThumbIDs]% {
+                        if k = "Window"
+                            window := v.Hwnd
+                        WinMove(, , Wn, Wh, v.Hwnd)
+                        if (k = "Border") {
+                            border := v.Hwnd
+                        }
+                        if (k = "TextOverlay") {
+                            TextOverlay := v.Hwnd
+                            ;WinMove(,,Wn,Wh, v.Hwnd )
+                            continue
+                        }
 
-                   }
-                   This.BorderSize(window, border)
-               }
-               This.Update_Thumb()
+                    }
+                    This.BorderSize(window, border)
+                }
+                This.Update_Thumb()
 
-           }
-       }
+            }
+        }
 
-   }
+    }
 
-   ; Snaps the window to the nearest corner of another window if it is within SnapRange in pixels
-   Window_Snap(hwnd, GuiObject, SnapRange := 20) {
-       if (This.ThumbnailSnap) {
-           SnapRange := This.ThumbnailSnap_Distance
-           ;stores the coordinates of the corners from moving window
-           WinGetPos(&X, &Y, &Width, &Height, hwnd)
-           A_RECT := { TL: [X, Y],
-               TR: [X + Width, Y],
-               BL: [X, Y + Height],
-               BR: [X + Width, Y + Height] }
+    ; Snaps the window to the nearest corner of another window if it is within SnapRange in pixels
+    Window_Snap(hwnd, GuiObject, SnapRange := 20) {
+        if (This.ThumbnailSnap) {
+            SnapRange := This.ThumbnailSnap_Distance
+            ;stores the coordinates of the corners from moving window
+            WinGetPos(&X, &Y, &Width, &Height, hwnd)
+            A_RECT := { TL: [X, Y],
+                TR: [X + Width, Y],
+                BL: [X, Y + Height],
+                BR: [X + Width, Y + Height] }
 
-           destX := X, destY := Y, shouldMove := false
-           ;loops through all created GUIs and checks the distanz between the corners
-           for index, _Gui in GuiObject.OwnProps() {
-               if (hwnd = _Gui["Window"].Hwnd) {
-                   continue
-               }
-               WinGetPos(&X, &Y, &Width, &Height, _Gui["Window"].Hwnd)
-               Gui_RECT := { TL: [X, Y],
-                   TR: [X + Width, Y],
-                   BL: [X, Y + Height],
-                   BR: [X + Width, Y + Height] }
+            destX := X, destY := Y, shouldMove := false
+            ;loops through all created GUIs and checks the distanz between the corners
+            for index, _Gui in GuiObject.OwnProps() {
+                if (hwnd = _Gui["Window"].Hwnd) {
+                    continue
+                }
+                WinGetPos(&X, &Y, &Width, &Height, _Gui["Window"].Hwnd)
+                Gui_RECT := { TL: [X, Y],
+                    TR: [X + Width, Y],
+                    BL: [X, Y + Height],
+                    BR: [X + Width, Y + Height] }
 
-               for _, corner in A_RECT.OwnProps() {
-                   for _, neighborCorner in Gui_RECT.OwnProps() {
-                       dist := Distance(corner, neighborCorner)
-                       if (dist <= SnapRange) {
-                           shouldMove := true
-                           destX := neighborCorner[1] - (corner = A_RECT.TR || corner = A_RECT.BR ? Width : 0)
-                           destY := neighborCorner[2] - (corner = A_RECT.BL || corner = A_RECT.BR ? Height : 0)
-                       }
-                   }
-               }
-           }
-           ;If some window is in range then Snap the moving window into it
-           ; Snap the full GUI Obj stack
-           if (shouldMove) {
-               for k, v in This.ThumbWindows.%This.ThumbHwnd_EvEHwnd[hwnd]%
-                   WinMove(destX, destY, , , v.Hwnd)
-           }
-       }
-       ;Nested Function for the Window Calculation
-       Distance(pt1, pt2) {
-           return Sqrt((pt1[1] - pt2[1]) ** 2 + (pt1[2] - pt2[2]) ** 2)
-       }
-   }
+                for _, corner in A_RECT.OwnProps() {
+                    for _, neighborCorner in Gui_RECT.OwnProps() {
+                        dist := Distance(corner, neighborCorner)
+                        if (dist <= SnapRange) {
+                            shouldMove := true
+                            destX := neighborCorner[1] - (corner = A_RECT.TR || corner = A_RECT.BR ? Width : 0)
+                            destY := neighborCorner[2] - (corner = A_RECT.BL || corner = A_RECT.BR ? Height : 0)
+                        }
+                    }
+                }
+            }
+            ;If some window is in range then Snap the moving window into it
+            ; Snap the full GUI Obj stack
+            if (shouldMove) {
+                for k, v in This.ThumbWindows.%This.ThumbHwnd_EvEHwnd[hwnd]%
+                    WinMove(destX, destY, , , v.Hwnd)
+            }
+        }
+        ;Nested Function for the Window Calculation
+        Distance(pt1, pt2) {
+            return Sqrt((pt1[1] - pt2[1]) ** 2 + (pt1[2] - pt2[2]) ** 2)
+        }
+    }
 
     ShowThumb(EVEWindowHwnd, HideOrShow) {
         try
@@ -364,51 +364,51 @@ Class ThumbWindow extends Propertys {
     }
 
 
-   Update_Thumb(AllOrOne := true, ThumbHwnd?) {
-       If (AllOrOne && !IsSet(ThumbHwnd)) {
-           for EvEHwnd, ThumbObj in This.ThumbWindows.OwnProps() {
-               for Name, Obj in ThumbObj {
-                   if (Name = "Window") {
-                       WinGetPos(, , &TWidth, &THeight, Obj.Hwnd)
-                       WinGetClientPos(, , &EWidth, &EHeight, "Ahk_Id" EvEHwnd)
-                       ThumbObj["Thumbnail"].Source := [0, 0, EWidth, EHeight]
-                       ThumbObj["Thumbnail"].Destination := [0, 0, TWidth, THeight]
-                       ThumbObj["Thumbnail"].Update()
-                   }
-               }
-           }
-       }
-       else {
-           If (IsSet(ThumbHwnd)) {
-               WinGetPos(, , &TWidth, &THeight, ThumbHwnd)
-               WinGetClientPos(, , &EWidth, &EHeight, This.ThumbHwnd_EvEHwnd[ThumbHwnd])
-               ThumbObj := This.ThumbWindows.%This.ThumbHwnd_EvEHwnd[ThumbHwnd]%
-               ThumbObj["Thumbnail"].Source := [0, 0, EWidth, EHeight]
-               ThumbObj["Thumbnail"].Destination := [0, 0, TWidth, THeight]
-               ThumbObj["Thumbnail"].Update()
-           }
-       }
+    Update_Thumb(AllOrOne := true, ThumbHwnd?) {
+        If (AllOrOne && !IsSet(ThumbHwnd)) {
+            for EvEHwnd, ThumbObj in This.ThumbWindows.OwnProps() {
+                for Name, Obj in ThumbObj {
+                    if (Name = "Window") {
+                        WinGetPos(, , &TWidth, &THeight, Obj.Hwnd)
+                        WinGetClientPos(, , &EWidth, &EHeight, "Ahk_Id" EvEHwnd)
+                        ThumbObj["Thumbnail"].Source := [0, 0, EWidth, EHeight]
+                        ThumbObj["Thumbnail"].Destination := [0, 0, TWidth, THeight]
+                        ThumbObj["Thumbnail"].Update()
+                    }
+                }
+            }
+        }
+        else {
+            If (IsSet(ThumbHwnd)) {
+                WinGetPos(, , &TWidth, &THeight, ThumbHwnd)
+                WinGetClientPos(, , &EWidth, &EHeight, This.ThumbHwnd_EvEHwnd[ThumbHwnd])
+                ThumbObj := This.ThumbWindows.%This.ThumbHwnd_EvEHwnd[ThumbHwnd]%
+                ThumbObj["Thumbnail"].Source := [0, 0, EWidth, EHeight]
+                ThumbObj["Thumbnail"].Destination := [0, 0, TWidth, THeight]
+                ThumbObj["Thumbnail"].Update()
+            }
+        }
 
-   }
+    }
 
-   ShowActiveBorder(EVEHwnd?, ThumbHwnd?) {
-       if (IsSet(EVEHwnd) && This.ShowClientHighlightBorder) {
-           if (This.ThumbWindows.HasProp(EVEHwnd) && !This.ShowAllColoredBorders) {
-               for EW_Hwnd, Objs in This.ThumbWindows.OwnProps() {
-                   for names, GuiObj in Objs {
-                       if (names = "Border") {
-                           GuiObj.Show("Hide")
-                       }
-                   }
-               }
-           }
+    ShowActiveBorder(EVEHwnd?, ThumbHwnd?) {
+        if (IsSet(EVEHwnd) && This.ShowClientHighlightBorder) {
+            if (This.ThumbWindows.HasProp(EVEHwnd) && !This.ShowAllColoredBorders) {
+                for EW_Hwnd, Objs in This.ThumbWindows.OwnProps() {
+                    for names, GuiObj in Objs {
+                        if (names = "Border") {
+                            GuiObj.Show("Hide")
+                        }
+                    }
+                }
+            }
 
-           if !(This.Thumbnail_visibility.Has(This.CleanTitle(WinGetTitle("Ahk_Id " EVEHwnd)))) {
-               Show_Border := This.ThumbWindows.%EVEHwnd%["Border"]
-               Show_Border.Show("NoActivate")
-           }
-       }
-   }
+            if !(This.Thumbnail_visibility.Has(This.CleanTitle(WinGetTitle("Ahk_Id " EVEHwnd)))) {
+                Show_Border := This.ThumbWindows.%EVEHwnd%["Border"]
+                Show_Border.Show("NoActivate")
+            }
+        }
+    }
 }
 
     

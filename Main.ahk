@@ -24,6 +24,8 @@ A_MaxHotKeysPerInterval := 10000
 
 /*
 TODO #########################
+! Add Show All Thumbnail Borders and make inactive Client Borders customizable
+
 
 */
 
