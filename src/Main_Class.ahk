@@ -47,8 +47,8 @@ Class Main_Class extends ThumbWindow {
         This.default_JSON := JSON.Load(default_JSON)
        
         This.TrayMenu()   
-        This.MinimizeDelay := This.Minimizeclients_Delay        
-
+        This.MinimizeDelay := This.Minimizeclients_Delay    
+        
         ;Hotkey to trigger by the script to get permissions t bring a Window in foreground
         ;Register all posible modifire combinations 
         prefixArr := ["","^","!", "#", "+", "+^", "+#", "+!", "^#", "^!","#!", "^+!", "^+#", "^#!", "+!#","^+#!"]
@@ -143,7 +143,8 @@ Class Main_Class extends ThumbWindow {
                     ; sets the Border to the active window thumbnail 
                     else if (Ahwnd != This.BorderActive) {
                         ;Shows the Thumbnail on top of other thumbnails
-                        WinSetAlwaysOnTop(1,This.ThumbWindows.%Ahwnd%["Window"].Hwnd )
+                        if (This.ShowThumbnailsAlwaysOnTop)
+                            WinSetAlwaysOnTop(1,This.ThumbWindows.%Ahwnd%["Window"].Hwnd )
                         
                         This.ShowActiveBorder(Ahwnd)
                         This.UpdateThumb_AfterActivation(, Ahwnd)

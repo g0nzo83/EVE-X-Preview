@@ -149,7 +149,7 @@ class Propertys extends TrayMenu {
 
     ClientHighligtBorderthickness {
         get => This._JSON["_Profiles"][This.LastUsedProfile]["Thumbnail Settings"]["ClientHighligtBorderthickness"]
-        set => This._JSON["_Profiles"][This.LastUsedProfile]["Thumbnail Settings"]["ClientHighligtBorderthickness"] := Trim(value, "`n ")
+        set => This._JSON["_Profiles"][This.LastUsedProfile]["Thumbnail Settings"]["ClientHighligtBorderthickness"] := (Trim(value, "`n ") <= 0 ? 1 : Trim(value, "`n "))
     }
 
     ClientHighligtColor {
@@ -180,9 +180,25 @@ class Propertys extends TrayMenu {
     ThumbnailTextMargins[var] {
         get => This._JSON["_Profiles"][This.LastUsedProfile]["Thumbnail Settings"]["ThumbnailTextMargins"][var]
         set => This._JSON["_Profiles"][This.LastUsedProfile]["Thumbnail Settings"]["ThumbnailTextMargins"][var] := Trim(value, "`n ")
-
-
     }
+    InactiveClientBorderthickness {
+        get {
+            if ( !This._JSON["_Profiles"][This.LastUsedProfile]["Thumbnail Settings"].Has("InactiveClientBorderthickness") ) 
+                This._JSON["_Profiles"][This.LastUsedProfile]["Thumbnail Settings"]["InactiveClientBorderthickness"] := "2"
+            return This._JSON["_Profiles"][This.LastUsedProfile]["Thumbnail Settings"]["InactiveClientBorderthickness"]
+        } 
+        set => This._JSON["_Profiles"][This.LastUsedProfile]["Thumbnail Settings"]["InactiveClientBorderthickness"] := (Trim(value, "`n ") <= 0 ? 1 : Trim(value, "`n "))
+    }
+    InactiveClientBorderColor {
+        get {
+            if ( !This._JSON["_Profiles"][This.LastUsedProfile]["Thumbnail Settings"].Has("InactiveClientBorderColor") )
+                This._JSON["_Profiles"][This.LastUsedProfile]["Thumbnail Settings"]["InactiveClientBorderColor"] := "#8A8A8A"
+
+             return convertToHex(This._JSON["_Profiles"][This.LastUsedProfile]["Thumbnail Settings"]["InactiveClientBorderColor"])
+        }
+        set => This._JSON["_Profiles"][This.LastUsedProfile]["Thumbnail Settings"]["InactiveClientBorderColor"] := convertToHex(Trim(value, "`n "))
+    }
+
 
     ;########################
     ;## Profile ClientSettings
@@ -190,7 +206,7 @@ class Propertys extends TrayMenu {
 
     CustomColorsGet[CName?] {
         get {
-            name := "", nameIndex := 0, ctext := "", cBorder := ""
+            name := "", nameIndex := 0, ctext := "", cBorder := "", cIABorder := ""
             for index, names in This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["CharNames"] {
                 if (names = CName) {
                     nameIndex := index
@@ -207,8 +223,10 @@ class Propertys extends TrayMenu {
                 }
                 if (This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["TextColor"].Length >= nameIndex)
                     ctext := This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["TextColor"][nameIndex]
+                if (This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["IABordercolor"].Length >= nameIndex)
+                    cIABorder := This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["IABordercolor"][nameIndex]
             }
-            return Map("Char", name, "Border", cBorder, "Text", ctext)
+            return Map("Char", name, "Border", cBorder, "Text", ctext, "IABorder", cIABorder)
         }
     }
 
@@ -216,6 +234,7 @@ class Propertys extends TrayMenu {
     IndexcChars => This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["CharNames"].Length
     IndexcBorder => This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["Bordercolor"].Length
     IndexcText => This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["TextColor"].Length
+    IndexcIABorders => This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["IABordercolor"].Length
 
     CustomColors_AllCharNames {
         get {
@@ -253,8 +272,8 @@ class Propertys extends TrayMenu {
             tempvar := []
             ListChars := StrSplit(value, "`n")
             for k, v in ListChars {
-                chars := RegExReplace(convertToHex(Trim(v, "`n ")), ".*:\s*", "")
-                tempvar.Push(chars)
+                chars := RegExReplace(Trim(v, "`n "), ".*:\s*", "")
+                tempvar.Push(convertToHex(chars))
             }
             This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["Bordercolor"] := tempvar
         }
@@ -274,10 +293,36 @@ class Propertys extends TrayMenu {
             tempvar := []
             ListChars := StrSplit(value, "`n")
             for k, v in ListChars {
-                chars := RegExReplace(convertToHex(Trim(v, "`n ")), ".*:\s*", "")
-                tempvar.Push(chars)
+                chars := RegExReplace(Trim(v, "`n "), ".*:\s*", "")
+                tempvar.Push(convertToHex(chars))
             }
             This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["TextColor"] := tempvar
+        }
+    }
+
+    CustomColors_IABorder_Colors {
+        get {
+            names := ""
+            if (!This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"].Has("IABordercolor")) {
+                This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["IABordercolor"] := ["FFFFFF"]
+                SetTimer(This.Save_Settings_Delay_Timer, -200)
+            }
+            for k, v in This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["IABordercolor"] {
+                if (A_Index < This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["IABordercolor"].Length)
+                    names .= k ": " v "`n"
+                else
+                    names .= k ": " v
+            }
+            return names
+        }
+        set {
+            tempvar := []
+            ListChars := StrSplit(value, "`n")
+            for k, v in ListChars {
+                chars := RegExReplace(Trim(v, "`n "), ".*:\s*", "")
+                tempvar.Push(convertToHex(chars))
+            }
+            This._JSON["_Profiles"][This.LastUsedProfile]["Custom Colors"]["cColors"]["IABordercolor"] := tempvar
         }
     }
 
@@ -446,6 +491,7 @@ class Propertys extends TrayMenu {
             }
             This.Thumbnail_visibility := Obj
             SetTimer(This.Save_Settings_Delay_Timer, -200)
+            This.NeedRestart := 1
             ;This.LV_Item := Item
             ; ddd := GuiCtrlObj.GetText(Item)
             ; ToolTip(Item ", " ddd " -, " Checked)
@@ -534,7 +580,8 @@ class Propertys extends TrayMenu {
         FileAppend(JSON.Dump(This._JSON, , "    "), "EVE-X-Preview.json")
         This.SelectProfile_DDL.Delete()
         This.SelectProfile_DDL.Add(This.Profiles_to_Array())
-        This.LastUsedProfile := "Default"
+        ControlChooseString(Obj.value, This.SelectProfile_DDL, "EVE-X-Preview - Settings")
+        This.LastUsedProfile := Obj.value
         Return
     }
     Save_ThumbnailPossitions() {

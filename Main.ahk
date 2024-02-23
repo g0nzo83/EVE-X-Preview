@@ -24,12 +24,9 @@ A_MaxHotKeysPerInterval := 10000
 
 /*
 TODO #########################
-! Add Show All Thumbnail Borders and make inactive Client Borders customizable
-
-
 */
 
-;@Ahk2Exe-Let U_version = 1.0.0.
+;@Ahk2Exe-Let U_version = 1.0.1.
 ;@Ahk2Exe-SetVersion %U_version%
 ;@Ahk2Exe-SetFileVersion %U_version%
 ;@Ahk2Exe-SetCopyright gonzo83
@@ -47,7 +44,9 @@ TODO #########################
 if !(A_IsCompiled)
     TraySetIcon("icon.ico",,true)
 
+; Catch all unhandled Errors to prevent the Script from stopping 
 OnError(Error_Handler)
+
 Call := Main_Class()
 
 

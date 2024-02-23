@@ -47,7 +47,9 @@
                 "HideThumbnailsOnLostFocus": false,
                 "ThumbnailOpacity": 80,
                 "ShowThumbnailsAlwaysOnTop": true,
-                "ShowAllColoredBorders":0
+                "ShowAllColoredBorders":0,
+                "InactiveClientBorderthickness": 2,
+                "InactiveClientBorderColor": "#8A8A8A"
             },
             "Hotkeys":[
                 {"Example Name1":"1"},
@@ -64,7 +66,8 @@
                 "cColors": {
                     "CharNames": ["Example Char"],
                     "TextColor": ["FFFFFF"],
-                    "Bordercolor":["FFFFFF"]                    
+                    "Bordercolor":["FFFFFF"],                
+                    "IABordercolor":["FFFFFF"]                    
                 }                               
             }
         }

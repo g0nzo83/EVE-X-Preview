@@ -3,9 +3,6 @@
         ;if settings got chnaged which require a restart to apply
         This.NeedRestart := 0
 
-
-        ;MsgBox(This.CustomColorsGet["Example Char"]["Char"])
-
         SetControlDelay(-1)
         This.S_Gui := Gui("+OwnDialogs +MinimizeBox -Resize -MaximizeBox -DPIScale SysMenu +MinSize500x250")
         This.S_Gui.Title := "EVE-X-Preview - Settings"
@@ -54,7 +51,7 @@
                 else {
                     for _, ob in v
                         ob.Visible := 0
-                }
+                }                
             }
             This.S_Gui.Show("AutoSize")
         }
@@ -91,7 +88,7 @@
                                     v.Visible := 1
                                 }
                             }
-                        }
+                        }                        
                     }
                     else {
                         for _, Ctrl in Controls {
@@ -100,12 +97,10 @@
                     }
                 }
                 if (This.Profiles.Count = 1 && This.SelectProfile_DDL.Text = "Default")
-                    MsgBox("you must first create a profile to change the settings")
+                    MsgBox("you need create a profile first to change the settings")
             }
 
             This.S_Gui.Show("AutoSize")
-
-
         }
     }
 
@@ -254,7 +249,6 @@
         ;Sets all controls invisible at beginning
         for k, v in This.S_Gui.Controls.Profile_Settings
             v.Visible := 0
-
     }
 
     ClientSettings_Ctrl(visible?) {
@@ -297,21 +291,21 @@
         }
     }
 
-    ;TODO Needs to be implemented - Add Propertys
-    ; User defined colurs per Client
+    ; User defined colors per Client
     Custom_ColorsCtrl() {
         This.S_Gui.Controls.Profile_Settings.PsDDL["Custom Colors"] := [], CustomColors := []
-        CustomColors.Push This.S_Gui.Add("GroupBox", "x20 y80 h480 w500 Section", "")
+        CustomColors.Push This.S_Gui.Add("GroupBox", "x20 y80 h480 w565 Section", "")
 
-        CustomColors.Push This.S_Gui.Add("Text", " xp+25 yp+140 Section ", "Custom Colors Active On/Off")
-        CustomColors.Push This.S_Gui.Add("Text", " x70 yp+40  ", "Character name")
-        CustomColors.Push This.S_Gui.Add("Text", " xp+150 yp ", "Border Color")
-        CustomColors.Push This.S_Gui.Add("Text", " xp+130 yp ", "Text Color")
+        CustomColors.Push This.S_Gui.Add("Text", " xp+25 yp+140 Section ", "Custom Colors Active - On/Off")        
+        CustomColors.Push This.S_Gui.Add("Text", " x35 yp+40  ", "Character Name:")
+        CustomColors.Push This.S_Gui.Add("Text", " xp+155 yp ", "Active Border Color:")
+        CustomColors.Push This.S_Gui.Add("Text", " xp+135 yp ", "Text Color:")
+        CustomColors.Push This.S_Gui.Add("Text", " xp+125 yp ", "Inactive Border Color:")
 
         CustomColors.Push This.S_Gui.Add("CheckBox", " xs+200 ys vCcoloractive Checked" This.CustomColorsActive, " ON / Off")
         This.S_Gui["Ccoloractive"].OnEvent("Click", (obj, *) => Cclors_Eventhandler(obj))
 
-        CustomColors.Push This.S_Gui.Add("Edit", " x60 yp+60 w150 h250 -Wrap vCchars", This.CustomColors_AllCharNames)
+        CustomColors.Push This.S_Gui.Add("Edit", " x30 yp+60 w150 h250 -Wrap vCchars", This.CustomColors_AllCharNames)
         This.S_Gui["Cchars"].OnEvent("Change", (obj, *) => Cclors_Eventhandler(obj))
 
         CustomColors.Push This.S_Gui.Add("Edit", " x+10 yp w120 hp -Wrap vCBorderColor", This.CustomColors_AllBColors)
@@ -320,6 +314,8 @@
         CustomColors.Push This.S_Gui.Add("Edit", " x+10 yp wp hp -Wrap vCTextColor", This.CustomColors_AllTColors)
         This.S_Gui["CTextColor"].OnEvent("Change", (obj, *) => Cclors_Eventhandler(obj))
 
+        CustomColors.Push This.S_Gui.Add("Edit", " x+10 yp wp hp -Wrap vIABorderColor", This.CustomColors_IABorder_Colors)
+        This.S_Gui["IABorderColor"].OnEvent("Change", (obj, *) => Cclors_Eventhandler(obj))
 
         This.S_Gui.Controls.Profile_Settings.PsDDL["Custom Colors"] := CustomColors
         for k, v in This.S_Gui.Controls.Profile_Settings.PsDDL["Custom Colors"]
@@ -356,10 +352,18 @@
                 }
                 This.NeedRestart := 1
             }            
+            else if (obj.Name = "IABorderColor") {
+                indexOld := This.IndexcText
+                This.CustomColors_IABorder_Colors := obj.value
+                if (indexOld < This.IndexcText) {
+                    obj.value := This.CustomColors_IABorder_Colors
+                    ControlSend("^{End}", obj.Hwnd)
+                }
+                This.NeedRestart := 1
+            }            
             SetTimer(This.Save_Settings_Delay_Timer, -200)
         }
     }
-
 
     Hotkey_GroupsCtrl() {
         This.S_Gui.Controls.Profile_Settings.PsDDL["Hotkey Groups"] := [], Hotkey_Groups := []
@@ -441,8 +445,6 @@
                 ForwardHKObj.value := This.Hotkey_Groups[ddlObj.Text]["ForwardsHotkey"], ForwardHKObj.Enabled := 1
                 BackwardHKObj.value := This.Hotkey_Groups[ddlObj.Text]["BackwardsHotkey"], BackwardHKObj.Enabled := 1
             }
-
-
         }
 
         SaveHKGroupList(obj) {
@@ -524,7 +526,7 @@
     ThumbnailSettings_Ctrl() {
         This.S_Gui.Controls.Profile_Settings.PsDDL["Thumbnail Settings"] := [], ThumbnailSettings := []
 
-        ThumbnailSettings.Push This.S_Gui.Add("GroupBox", "x20 y80 h530 w500 Section", "")
+        ThumbnailSettings.Push This.S_Gui.Add("GroupBox", "x20 y80 h580 w500 Section", "")
 
         ThumbnailSettings.Push This.S_Gui.Add("Text", "xp+15 yp+140 Section", "Show Thumbnail Text Overlay:")
         ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15 ", "Thumbnail Text Color:")
@@ -532,11 +534,14 @@
         ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15 ", "Thumbnail Text Font:")
         ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15 ", "Thumbnail Text Margins:")
         ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15 ", "Client Highligt Color:")
-        ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15 ", "Client Highligt Border thickness:")
+        ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15 ", "Client Highligt Border Thickness:")
         ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15 ", "Show Client Highlight Border:")
         ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15 ", "Hide Thumbnails On Lost Focus:")
         ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15 ", "Thumbnail Opacity:")
         ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15 ", "Show Thumbnails AlwaysOnTop:")
+        ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15", "Show All Borders:")
+        ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15", "Inactive Client Border Thickness:")
+        ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15", "Inactive Client Border Color:")
 
         ThumbnailSettings.Push This.S_Gui.Add("CheckBox", "xs+230 ys Section vShowThumbnailTextOverlay Checked" This.ShowThumbnailTextOverlay, "On/Off")
         This.S_Gui["ShowThumbnailTextOverlay"].OnEvent("Click", (obj, *) => ThumbnailSettings_EventHandler(obj))
@@ -563,7 +568,6 @@
         ThumbnailSettings.Push This.S_Gui.Add("Text", " x+5 yp+3 ", "Hex or RGB")
         This.S_Gui["ClientHighligtColor"].OnEvent("Change", (obj, *) => ThumbnailSettings_EventHandler(obj))
 
-
         ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+15 ", "px:")
         ThumbnailSettings.Push This.S_Gui.Add("Edit", "x+5 yp-3  w30 vClientHighligtBorderthickness -Wrap", This.ClientHighligtBorderthickness)
         This.S_Gui["ClientHighligtBorderthickness"].OnEvent("Change", (obj, *) => ThumbnailSettings_EventHandler(obj))
@@ -581,6 +585,16 @@
         ThumbnailSettings.Push This.S_Gui.Add("CheckBox", "xs y+12 vShowThumbnailsAlwaysOnTop Checked" This.ShowThumbnailsAlwaysOnTop, "On/Off")
         This.S_Gui["ShowThumbnailsAlwaysOnTop"].OnEvent("Click", (obj, *) => ThumbnailSettings_EventHandler(obj))
 
+        ThumbnailSettings.Push This.S_Gui.Add("CheckBox", "xs y+15 vShowAllBorders Checked" This.ShowAllColoredBorders, "On/Off")
+        This.S_Gui["ShowAllBorders"].OnEvent("Click", (obj, *) => ThumbnailSettings_EventHandler(obj))
+
+        ThumbnailSettings.Push This.S_Gui.Add("Text", " xs y+12 ", "px:")
+        ThumbnailSettings.Push This.S_Gui.Add("Edit", "x+5 yp-3  w30 vInactiveClientBorderthickness -Wrap", This.InactiveClientBorderthickness)
+        This.S_Gui["InactiveClientBorderthickness"].OnEvent("Change", (obj, *) => ThumbnailSettings_EventHandler(obj))
+
+        ThumbnailSettings.Push This.S_Gui.Add("Edit", "xs y+5 w120 vInactiveClientBorderColor -Wrap", This.InactiveClientBorderColor)
+        ThumbnailSettings.Push This.S_Gui.Add("Text", " x+5 yp+3 ", "Hex or RGB")
+        This.S_Gui["InactiveClientBorderColor"].OnEvent("Change", (obj, *) => ThumbnailSettings_EventHandler(obj))
 
         This.S_Gui.Controls.Profile_Settings.PsDDL["Thumbnail Settings"] := ThumbnailSettings
         for k, v in This.S_Gui.Controls.Profile_Settings.PsDDL["Thumbnail Settings"] {
@@ -635,6 +649,20 @@
                 This.ShowThumbnailsAlwaysOnTop := obj.value
                 This.NeedRestart := 1
             }
+            else if (obj.Name = "ShowAllBorders") {
+                This.ShowAllColoredBorders := obj.value
+                This.S_Gui["InactiveClientBorderthickness"].Enabled := This.ShowAllColoredBorders
+                This.S_Gui["InactiveClientBorderColor"].Enabled := This.ShowAllColoredBorders
+                This.NeedRestart := 1
+            }
+            else if (obj.Name = "InactiveClientBorderColor") {
+                This.InactiveClientBorderColor := obj.value
+                This.NeedRestart := 1
+            }
+            else if (obj.Name = "InactiveClientBorderthickness") {
+                This.InactiveClientBorderthickness := obj.value
+                This.NeedRestart := 1
+            }
 
             SetTimer(This.Save_Settings_Delay_Timer, -200)
         }
@@ -657,15 +685,12 @@
             }
         }
 
-
         This.Tv_LV.ModifyCol(1, 150), This.Tv_LV.ModifyCol(2, 115)
         This.Tv_LV.OnEvent("ItemCheck", ObjBindMethod(This, "_Tv_LVSelectedRow"))
 
         This.S_Gui.Controls.Profile_Settings.PsDDL["Thumbnail Visibility"] := Thumbnail_visibility
         for k, v in This.S_Gui.Controls.Profile_Settings.PsDDL["Thumbnail Visibility"]
             v.Visible := 0
-
-
     }
 
     On_WM_MOUSEMOVE(wParam, lParam, msg, Hwnd) {
@@ -742,7 +767,7 @@
         This.S_Gui["Cchars"].value := This.CustomColors_AllCharNames
         This.S_Gui["CBorderColor"].value := This.CustomColors_AllBColors
         This.S_Gui["CTextColor"].value := This.CustomColors_AllTColors
-
+        This.S_Gui["IABorderColor"].value := This.CustomColors_IABorder_Colors
 
         ;Hotkey Groups
         This.S_Gui["HotkeyGroupDDL"].Delete()
@@ -775,6 +800,9 @@
         This.S_Gui["HideThumbnailsOnLostFocus"].value := This.HideThumbnailsOnLostFocus
         This.S_Gui["ThumbnailOpacity"].value := IntegerToPercentage(This.ThumbnailOpacity)
         This.S_Gui["ShowThumbnailsAlwaysOnTop"].value := This.ShowThumbnailsAlwaysOnTop
+        This.S_Gui["ShowAllBorders"].value := This.ShowAllColoredBorders
+        This.S_Gui["InactiveClientBorderthickness"].value := This.InactiveClientBorderthickness
+        This.S_Gui["InactiveClientBorderColor"].value := This.InactiveClientBorderColor
 
         ;Thumbnail Visibility
         This.S_Gui["Visibility_List"].Delete()
@@ -795,6 +823,8 @@
             This.S_Gui["ForwardsKey"].Enabled := 0
             This.S_Gui["BackwardsdKey"].Enabled := 0
         }
+        This.S_Gui["InactiveClientBorderthickness"].Enabled := This.ShowAllColoredBorders
+        This.S_Gui["InactiveClientBorderColor"].Enabled := This.ShowAllColoredBorders
     }
 
 
@@ -823,8 +853,6 @@
         else
             return []
     }
-
-
 }
 ;Class End
 
