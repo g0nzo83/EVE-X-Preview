@@ -1,9 +1,10 @@
 ﻿##  EVE-X-Preview
 
-EVE-X-Preview is a tool for Windows that makes it easy to manage and use multiple EVE clients. 
-It allows displaying thumbnails of the running EVE clients and bringing EVE clients to the foreground with a click on the thumbnail or with a set hotkey. Mouse and keyboard buttons are supported.
+EVE-X-Preview is a tool for Windows for the game EVE Online that makes it easy to manage and use multiple EVE clients. 
+It allows displaying thumbnails of the running EVE clients and bringing EVE clients to the foreground with a click on the thumbnail or with a set hotkey. <br>
+Mouse and keyboard buttons are supported.
 
-It is possible to create multiple profiles to quickly change the hotkey assignments, thumbnail position, and color adjustments
+It is possible to create multiple profiles to quickly change the hotkey assignments, thumbnail position, and color adjustments.
 
 
 **In summary, this tool offers the following features:**
@@ -24,7 +25,7 @@ It is possible to create multiple profiles to quickly change the hotkey assignme
 * Displaying excerpts from the client as thumbnails.
 * Manipulating EVE clients. 
 
-#### EVE-X-Preview does not interact directly with the game clients in any way. It only allows changing the foreground window with the help of hotkeys and thumbnails. <br> No features will be added now or in the future that violate the EULA and Terms of Service of EVE Online. 
+#### EVE-X-Preview does not interact directly with the game clients in any way. It only allows changing the foreground window with the help of hotkeys and thumbnails. <br> No features will be added now or in the future who intentionally break the EULA and Terms of Service of EVE Online. 
 
 
 
@@ -37,7 +38,7 @@ It is possible to create multiple profiles to quickly change the hotkey assignme
 5. Right Click on the Tryicon and klick "Open" or double klick it and klick on "Profile Settings" create a new Profile.
 6. From here on you can adjust as you like
 
-`Important Note:`  <br> `some settings require a restart of the tool. The settings window must be closed so that the settings made there are applied`
+`Important Note:`  <br> `Some settings require a restart of the tool. The settings window must be closed so that the settings made there are applied`
 
 ## Run from Source
 
@@ -53,6 +54,21 @@ Nevertheless I want to point out that the use of EVE-X-Preview or any other Thri
 
 ## Application Options
 
+### Mouse Gestures and Actions
+
+Mouse gestures are applied to the thumbnail window currently being hovered over.
+
+| Action | Gesture |
+| --- | --- |
+| Activate the EVE Online client and bring it to front  | Left click the thumbnail |
+| Minimize the EVE Online client | Hold Control key and click the thumbnail |
+| Move thumbnail to a new position | Press right mouse button and move the mouse |
+| Move all thumbnails | Hold Control and right Mousebutton and move the mouse |
+| Adjust all thumbnails height and width | Press both left and right mouse buttons and move the mouse up or down |
+|Adjust a single thumbnails height and width | Hold Control and the right+left mouse button and move the mouse|
+
+<br>
+
 ### **Tray Menu - Settings**
 
 | Option | Description | 
@@ -66,9 +82,7 @@ Nevertheless I want to point out that the use of EVE-X-Preview or any other Thri
 | Reload | If problems occur with the tool, it can simply be restarted with this option |
 | Exit | Exits the program |
 
-
-
-
+<br>
 
 ### **Global Settings**
 | Option | Description | 
@@ -81,6 +95,8 @@ Nevertheless I want to point out that the use of EVE-X-Preview or any other Thri
 | Thumbnail Snap | Allows you to switch the automatic alignment of the thumbnails to each other to On or Off |
 | Thumbnail Snap Distance | Defines the range up to which the thumbnails automatically align with each other. <br> This only has an effect when Thumbnail Snap is activated |
 | Minimize EVE Window Delay | Sets the delay before an inactive client is minimized after another one has been activated. This option is only used if "Minimize Inactive Client" has been activated |
+
+<br>
 
 ### **Profile Settings - Client Settings**
 | Option | Description |
@@ -95,6 +111,9 @@ Nevertheless I want to point out that the use of EVE-X-Preview or any other Thri
 | --- |
 | The supported syntax is: <br>HEX: -> 0xFFFFFF or #FFFFFF or FFFFFF <br> RGB: -> RGB(225,255,255) or (225,255,255) or 225,255,255|
 
+**Inactive Border Color will only take effect if the settings "Show All Borders" is selected in "Thumbnail Settings" <br> This overwrites the color in "Inactive Client Border Color" for the specified characters.**
+
+<br>
 
 
 ### **Profile Settings - Hotkey Groups**
@@ -121,7 +140,7 @@ There are several ways to specify hotkeys <br> For a detailed description you ca
 | Option | Description |
 | --- | --- |
 | Show Thumbnail Text Overlay | Shows or removes the character name on the thumbnail |
-| Thumbnail Text Colour | Sets the color of the text of the character name on the thumbnail <br> The supported syntax is: <br> HEX: -> 0xFFFFFF or #FFFFFF or FFFFFF <br> RGB: -> RGB(225,255,255) or (225,255,255) or 225,255,255 |
+| Thumbnail Text Color | Sets the color of the text of the character name on the thumbnail <br> The supported syntax is: <br> HEX: -> 0xFFFFFF or #FFFFFF or FFFFFF <br> RGB: -> RGB(225,255,255) or (225,255,255) or 225,255,255 |
 |Thumbnail Text Size | Changes the size of the text of the character name. |
 | Thumbnail Text Font | Changes the font of the text on the Thubnail. The font must be available in the Windows system. |
 | Thumbnail Text Margins | Changes the distance of the thumbnail text to the edges of the thumbnail |
@@ -131,23 +150,14 @@ There are several ways to specify hotkeys <br> For a detailed description you ca
 | Hide Thumbnails on Lost Focus | If activated, the thumbnails are not displayed if no EVE client is in the foreground and active. |
 | Thumbnail Opacity | Sets the transparency of the thumbnail. The values are in percent from 0-100 |
 | Show Thumbnails AlwaysOnTop | If activated, the thumbnails are always displayed above all windows. |
+| Show All Borders | Displays a border around each thumbnail. The color and thickness is specified in the settings below. <br> Character specific colors can be set under Custom Colors setting. |
+|Inactive Client Border Thickness | Sets the size of the border that is displayed around the thumbnail for inactive clients |
+|Inactive Client Border Color | Sets the color of the border that is displayed around the thumbnail when the client is inactive <br> The supported syntax is: <br> HEX: -> 0xFFFFFF or #FFFFFF or FFFFFF <br> RGB: -> RGB(225,255,255) or (225,255,255) or 225,255,255|
 
 ### **Profile Settings - Thumbnail Visibility**
 |The thumbnails of the selected characters are not displayed |
 |---|
 
-### Mouse Gestures and Actions
-
-Mouse gestures are applied to the thumbnail window currently being hovered over.
-
-| Action | Gesture |
-| --- | --- |
-| Activate the EVE Online client and bring it to front  | Left click the thumbnail |
-| Minimize the EVE Online client | Hold Control key and click the thumbnail |
-| Move thumbnail to a new position | Press right mouse button and move the mouse |
-| Move all thumbnails | Hold Control and right Mousebutton and move the mouse |
-| Adjust all thumbnails height and width | Press both left and right mouse buttons and move the mouse up or down |
-|Adjust a single thumbnails height and width | Hold Control and the right+left mouse button and move the mouse|
 
 
 ## About
