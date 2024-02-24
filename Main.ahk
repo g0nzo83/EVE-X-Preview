@@ -26,7 +26,7 @@ A_MaxHotKeysPerInterval := 10000
 TODO #########################
 */
 
-;@Ahk2Exe-Let U_version = 1.0.1.
+;@Ahk2Exe-Let U_version = 1.0.2.
 ;@Ahk2Exe-SetVersion %U_version%
 ;@Ahk2Exe-SetFileVersion %U_version%
 ;@Ahk2Exe-SetCopyright gonzo83
@@ -68,7 +68,7 @@ Load_JSON() {
                                             DJSON,
                                             JSON.Load(FileRead("EVE-X-Preview.json"))
                                         )
-            FileDelete("EVE-X-Preview.json")
+            FileDelete("EVE-X-Preview.json")   
             FileAppend(JSON.Dump(_JSON,,"    " ), "EVE-X-Preview.json")
         }
         catch as e  {

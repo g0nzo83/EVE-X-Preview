@@ -223,7 +223,7 @@ Class Main_Class extends ThumbWindow {
                 if(This.Global_Hotkeys) {
                     if( v["ForwardsHotkey"] != "" ) {                        
                         Fkey := v["ForwardsHotkey"], Arr := v["Characters"]
-                        HotIf (*) => This.OneWinExist(Arr) && !WinActive("EVE-X-Preview - Settings")
+                        HotIf ObjBindMethod(This, "OnWinExist", Arr)
                         try {
                             Hotkey( v["ForwardsHotkey"], ObjBindMethod(This, "Cycle_Hotkey_Groups",Arr,"ForwardsHotkey"), "P1")
                         }
@@ -233,7 +233,7 @@ Class Main_Class extends ThumbWindow {
                     }
                     if( v["BackwardsHotkey"] != "" ) {
                         Fkey := v["BackwardsHotkey"], Arr := v["Characters"]
-                        HotIf (*) => This.OneWinExist(Arr) && !WinActive("EVE-X-Preview - Settings")
+                        HotIf ObjBindMethod(This, "OnWinExist", Arr)
                         try {
                             Hotkey( v["BackwardsHotkey"], ObjBindMethod(This, "Cycle_Hotkey_Groups",Arr,"BackwardsHotkey"), "P1")   
                         }
@@ -246,7 +246,7 @@ Class Main_Class extends ThumbWindow {
                 else {
                     if( v["ForwardsHotkey"] != "" ) {
                         Fkey := v["ForwardsHotkey"], Arr := v["Characters"]
-                        HotIf (*) => This.OneWinExist(Arr) && WinActive("Ahk_exe exefile.exe")
+                        HotIf ObjBindMethod(This, "OnWinActive", Arr)
                         try {
                             Hotkey( v["ForwardsHotkey"], ObjBindMethod(This, "Cycle_Hotkey_Groups",Arr,"ForwardsHotkey"), "P1")
                         }
@@ -256,7 +256,7 @@ Class Main_Class extends ThumbWindow {
                     }
                     if( v["BackwardsHotkey"] != "" ) {
                         Fkey := v["BackwardsHotkey"], Arr := v["Characters"]
-                        HotIf (*) => This.OneWinExist(Arr) && WinActive("Ahk_exe exefile.exe")
+                        HotIf ObjBindMethod(This, "OnWinActive", Arr)
                         try {
                             Hotkey( v["BackwardsHotkey"], ObjBindMethod(This, "Cycle_Hotkey_Groups",Arr,"BackwardsHotkey"), "P1")   
                         }
@@ -281,7 +281,7 @@ Class Main_Class extends ThumbWindow {
             if (Index > length)
                 Index := 1
 
-            if (This.OneWinExist(Arr)) {
+            if (This.OnWinExist(Arr)) {
                 Try {
                     if !(WinExist("EVE - " This.CleanTitle(Arr[Index]))) {
                         while (!(WinExist("EVE - " This.CleanTitle(Arr[Index])))) {
@@ -301,7 +301,7 @@ Class Main_Class extends ThumbWindow {
             if (Index <= 0)
                 Index := length
 
-            if (This.OneWinExist(Arr)) {
+            if (This.OnWinExist(Arr)) {
                 if !(WinExist("EVE - " This.CleanTitle(Arr[Index]))) {
                     while (!(WinExist("EVE - " This.CleanTitle(Arr[Index])))) {
                         Index -= 1
@@ -323,13 +323,19 @@ Class Main_Class extends ThumbWindow {
     }
 
      ; To Check if atleast One Win stil Exist in the Array for the cycle groups hotkeys
-    OneWinExist(Arr, *) {
+    OnWinExist(Arr, *) {
         for index, Name in Arr {
-            If WinExist("EVE - " Name " Ahk_Exe exefile.exe")
+            If ( WinExist("EVE - " Name " Ahk_Exe exefile.exe") && !WinActive("EVE-X-Preview - Settings") ) {
                 return true
+            }
         }
         return false
-
+    }
+    OnWinActive(Arr, *) {        
+        If (This.OnWinExist(Arr) && WinActive("Ahk_exe exefile.exe")) {
+            return true
+        }        
+        return false
     }
 
     ;## Updates the Thumbnail in the GUI after Activation
