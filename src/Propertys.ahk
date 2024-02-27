@@ -599,22 +599,17 @@ class Propertys extends TrayMenu {
 
     ;### Stores the Thumbnail Size and Possitions in the Json file
     Save_Settings() {
-        if !(This.Tray_Profile_scwitch) {
-            for EvEHwnd, GuiObj in This.ThumbWindows.OwnProps() {
-                for Names, Obj in GuiObj {
-                    if (Names = "Window" && Obj.Title = "" || Obj.Title = "EVE")
-                        continue
-                    Else if (Names = "Window") {
-                        WinGetPos(&wX, &wY, &wWidth, &wHeight, Obj.Hwnd)
-                        This.ThumbnailPositions[Obj.Title] := [wX, wY, wWidth, wHeight]
-                    }
+        for EvEHwnd, GuiObj in This.ThumbWindows.OwnProps() {
+            for Names, Obj in GuiObj {
+                if (Names = "Window" && Obj.Title = "" || Obj.Title = "EVE")
+                    continue
+                Else if (Names = "Window") {
+                    WinGetPos(&wX, &wY, &wWidth, &wHeight, Obj.Hwnd)
+                    This.ThumbnailPositions[Obj.Title] := [wX, wY, wWidth, wHeight]
                 }
             }
         }
         SetTimer(This.Save_Settings_Delay_Timer, -200)
-        ; var := Json.Dump(This._JSON, , "    ")
-        ; FileDelete("EVE-X-Preview.json")
-        ; FileAppend(var, "EVE-X-Preview.json")
     }
 }
 

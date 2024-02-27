@@ -16,8 +16,6 @@ Class TrayMenu extends Settings_Gui {
             Profiles_Submenu.Add(k, MenuHandler)
         }
 
-        ;Profiles_Submenu.Add() ;*Seperator line
-
         TrayMenu := This.TrayMenuObj
         TrayMenu.Delete() ; Delete the Default TrayMenu Items
 
@@ -40,17 +38,17 @@ Class TrayMenu extends Settings_Gui {
         TrayMenu.Add("Save Client Positions", (*) => This.Client_Possitions())
         TrayMenu.Add()
         TrayMenu.Add()
-        TrayMenu.Add("Save Thumbnail Positions", MenuHandler)  ; Creates a separator line.
+        TrayMenu.Add("Save Thumbnail Positions", MenuHandler)
         TrayMenu.Add("Reload", (*) => Reload())
         TrayMenu.Add()
-        TrayMenu.Add("Exit", (*) => ExitApp())  ; Creates a new menu item.
+        TrayMenu.Add("Exit", (*) => ExitApp())
         TrayMenu.Default := "Open"
 
         MenuHandler(ItemName, ItemPos, MyMenu) {
             If (ItemName = "Exit")
                 ExitApp
             Else if (ItemName = "Save Thumbnail Positions") {
-                ;* Saved Thumbnail Positions only if the Saved button is used on the Traymenu
+                ; Saved Thumbnail Positions only if the Saved button is used on the Traymenu
                 This.Save_ThumbnailPossitions
             }
             Else if (ItemName = "Restore Client Positions") {
@@ -59,10 +57,10 @@ Class TrayMenu extends Settings_Gui {
                 SetTimer(This.Save_Settings_Delay_Timer, -200)
             }
             Else if (This.Profiles.Has(ItemName)) {
-                This.Tray_Profile_scwitch := 1
+                ; Change the lastUsedProfile to the Profile name, save it to Json file and reload the script with the new Settings
                 This.LastUsedProfile := ItemName
-                This.Save_Settings()
-                This.Tray_Profile_scwitch := 0
+                This.SaveJsonToFile()
+                Sleep(500)
                 Reload()
             }
             Else if (ItemName = "Open") {
