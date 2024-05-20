@@ -4,7 +4,7 @@
         This.NeedRestart := 0
 
         SetControlDelay(-1)
-        This.S_Gui := Gui("+OwnDialogs +MinimizeBox -Resize -MaximizeBox -DPIScale SysMenu +MinSize500x250")
+        This.S_Gui := Gui("+OwnDialogs +MinimizeBox -Resize -MaximizeBox SysMenu +MinSize500x250")
         This.S_Gui.Title := "EVE-X-Preview - Settings"
 
         ;Font options for the Buttons

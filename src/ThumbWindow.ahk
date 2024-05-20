@@ -5,7 +5,7 @@ Class ThumbWindow extends Propertys {
     Create_Thumbnail(Win_Hwnd, Win_Title) {
         ThumbObj := Map()
         
-        ThumbObj["Window"] := Gui("+Owner +LastFound -Caption +ToolWindow -DPIScale +E0x08000000 " (This.ShowThumbnailsAlwaysOnTop ? "AlwaysOnTop" : "-AlwaysOnTop") , Win_Title) ;WS_EX_NOACTIVATE -> +E0x08000000
+        ThumbObj["Window"] := Gui("+Owner +LastFound -Caption +ToolWindow +E0x08000000 " (This.ShowThumbnailsAlwaysOnTop ? "AlwaysOnTop" : "-AlwaysOnTop") , Win_Title) ;WS_EX_NOACTIVATE -> +E0x08000000
         ThumbObj["Window"].OnEvent("Close", GUI_Close_Button)
 
         ; The Backcolor which is visible when no thumbnail is displayed 

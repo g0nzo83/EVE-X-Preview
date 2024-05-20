@@ -53,7 +53,7 @@ Class Main_Class extends ThumbWindow {
         ;Register all posible modifire combinations 
         prefixArr := ["","^","!", "#", "+", "+^", "+#", "+!", "^#", "^!","#!", "^+!", "^+#", "^#!", "+!#","^+#!"]
         for index, prefix in prefixArr
-            Hotkey(  prefix . Main_Class.virtualKey, ObjBindMethod(This, "ActivateForgroundWindow"), "P1")
+            Hotkey(  prefix . Main_Class.virtualKey, ObjBindMethod(This, "ActivateForgroundWindow"), "S P1")
 
         ; Register Hotkey for Puase Hotkeys if the user has is Set
         if (This.Suspend_Hotkeys_Hotkey != "") {
