@@ -68,6 +68,7 @@ Class Main_Class extends ThumbWindow {
         
         ; The Timer property for Asycn Minimizing.
         this.timer := ObjBindMethod(this, "EVEMinimize")
+        This.Register_CharSelectionScreen_Hotkeys()
         
         ;margins for DwmExtendFrameIntoClientArea. higher values extends the shadow
         This.margins := Buffer(16, 0)
@@ -90,6 +91,7 @@ Class Main_Class extends ThumbWindow {
         ;Register the Hotkeys for cycle groups 
         This.Register_Hotkey_Groups()
         This.BorderActive := 0
+        This.ClientsInCharScreen := Map()
 
         return This
     }
@@ -102,26 +104,42 @@ Class Main_Class extends ThumbWindow {
             return
         ; If any EVE Window exist
         if (WinList.Length) {
-            try {
-                ;Check if a window exist without Thumbnail and if the user is in Character selection screen or not
-                for index, hwnd in WinList {
-                    WinList.%hwnd% := { Title: This.CleanTitle(WinGetTitle(hwnd)) }
-                    if !This.ThumbWindows.HasProp(hwnd) {
-                        This.EVE_WIN_Created(hwnd, WinList.%hwnd%.title)
-                        if (!This.HideThumbnailsOnLostFocus)                            
-                            This.ShowThumb(hwnd, "Show")
-                        HideShowToggle := 1                  
-                    }
-                    ;if in Character selection screen 
-                    else if (This.ThumbWindows.HasProp(hwnd)) {
-                        if (This.ThumbWindows.%hwnd%["Window"].Title != WinList.%hwnd%.Title) {
-                            This.EVENameChange(hwnd, WinList.%hwnd%.Title)
-                            }
-                        }                         
+           ;Check if a window exist without Thumbnail and if the user is in Character selection screen or not
+            for index, hwnd in WinList {
+                WinList.%hwnd% := { Title: This.CleanTitle(WinGetTitle(hwnd)) }
+                
+                if (WinList.%hwnd%.Title == "") {
+                    This.ClientsInCharScreen[hwnd] := WinList.%hwnd%.Title 
+                    
                 }
+                ;if the User disables the Thumbnails we can skip all the code below this
+                if (This.DisableLiveThumbnail) {
+                    This.DisableLiveThumb(hwnd, WinList.%hwnd%.Title, WinList)
+                    continue
+                }
+
+                if !This.ThumbWindows.HasProp(hwnd) {
+                    This.EVE_WIN_Created(hwnd, WinList.%hwnd%.title)
+                    if (!This.HideThumbnailsOnLostFocus)                            
+                        This.ShowThumb(hwnd, "Show")
+                    HideShowToggle := 1                  
+                }
+                ;if in Character selection screen 
+                else if (This.ThumbWindows.HasProp(hwnd)) {
+                    if (This.ThumbWindows.%hwnd%["Window"].Title != WinList.%hwnd%.Title && WinList.%hwnd%.Title = "") {
+                        This.ThumbWindows.%hwnd%["Window"].Title := "Char Screen"
+                        ;This.ThumbWindows.%hwnd%["TextOverlay"]["OverlayText"].value := "Char Screen"
+                        if (This.ThumbWindows.%hwnd%["Window"].Title == "Char Screen" && WinList.%hwnd%.Title != "") {
+                            This.EVENameChange(hwnd, WinList.%hwnd%.Title)
+                        }
+                    }
+                    else if (This.ThumbWindows.%hwnd%["Window"].Title != WinList.%hwnd%.Title) {
+                        This.EVENameChange(hwnd, WinList.%hwnd%.Title)
+                    }
+
+                }                         
             }
-            catch
-                return
+
              
             try {
                 ;if HideThumbnailsOnLostFocus is selectet check if a eve window is still in foreground, runs a timer once with a delay to prevent stuck thumbnails
@@ -213,6 +231,52 @@ Class Main_Class extends ThumbWindow {
             }
         }
     }    
+
+    Register_CharSelectionScreen_Hotkeys(){
+        if (This.CharScreenHotkey != "" ) {
+            HotIf (*) => WinExist("ahk_exe " This.EVEExe)
+            try {
+                Hotkey(This.CharScreenHotkey, ObjBindMethod(This, "CycleCharScreen"),"P1" )
+            }
+        }
+    }
+
+    CycleCharScreen(*){
+        static Index := 1 
+        Arr := []
+        list := ""
+        
+        WinList := WinGetList(This.EVEExe)
+        if (WinList != "") {
+            for index, hwnd in WinList {
+                if (This.CleanTitle(WinGetTitle(hwnd)) = "")
+                    Arr.Push(hwnd)
+            }
+
+            if (Arr.Length >= 1 ) {
+                for i, hwnds in Arr {
+                    list .= hwnds ","
+                }
+                list := Sort(list, "N D,")      
+                Arr := StrSplit(list, ",")  
+                Arr.Pop()
+
+                for i, hwnds in Arr {
+                    index := i
+                    if (WinActive("ahk_id " hwnds)) {
+                        index := i + 1    
+                        if (index > Arr.Length)
+                            index := 1
+                        break                
+                    }
+                    else {
+                        index := 1
+                    }
+                }
+                This.ActivateEVEWindow(Arr[index],,)
+            }
+        }
+    }
 
     ;Register the Hotkeys for cycle Groups if any set
     Register_Hotkey_Groups() {
@@ -319,6 +383,18 @@ Class Main_Class extends ThumbWindow {
                     return index
             }
             return false
+        }
+    }
+    DisableLiveThumb(hwnd, title, arr) {
+        for hwnds, name in This.ThumbWindows.Clone().OwnProps() {
+            if (!arr.HasProp(hwnds)) {
+                This.ThumbWindows.DeleteProp(hwnds)
+            }
+        }
+
+        if !(This.ThumbWindows.HasProp(hwnd)) {
+            This.ThumbWindows.%hwnd% := ""
+            This.RegisterHotkeys(title, hwnd)
         }
     }
 
@@ -551,7 +627,7 @@ Class Main_Class extends ThumbWindow {
     ; gets called by the timer to run async
     EVEMinimize() {
         for EveHwnd, GuiObj in This.ThumbWindows.OwnProps() {
-            ThumbHwnd := GuiObj["Window"].Hwnd
+            ;ThumbHwnd := GuiObj["Window"].Hwnd
             try
                 WinTitle := WinGetTitle("Ahk_Id " EveHwnd)
             catch

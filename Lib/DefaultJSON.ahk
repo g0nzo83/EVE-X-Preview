@@ -2,6 +2,8 @@
 (
 {
     "global_Settings": {
+        "CharScreenHotkey":"",
+        "DisableLiveThumbnail": 0,
         "Suspend_Hotkeys_Hotkey": "",
         "Global_Hotkeys": 1,
         "LastUsedProfile": "Default",

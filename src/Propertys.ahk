@@ -33,11 +33,19 @@ class Propertys extends TrayMenu {
 
     ;######################
     ;## global Settings
+
+    CharScreenHotkey {
+        get => This._JSON["global_Settings"]["CharScreenHotkey"]
+        set => This._JSON["global_Settings"]["CharScreenHotkey"] := value
+    }
+    DisableLiveThumbnail {
+        get => This._JSON["global_Settings"]["DisableLiveThumbnail"]
+        set => This._JSON["global_Settings"]["DisableLiveThumbnail"] := value
+    }
+
     ThumbnailStartLocation[key] {
         get => This._JSON["global_Settings"]["ThumbnailStartLocation"][key]
         set => This._JSON["global_Settings"]["ThumbnailStartLocation"][key] := value
-
-
     }
 
     Minimizeclients_Delay {

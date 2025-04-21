@@ -108,8 +108,9 @@
     Global_Settings(visible?) {
         This.S_Gui.Controls.Global_Settings := []
         This.S_Gui.SetFont("s10 w400")
-        This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("GroupBox", "x20 y80 h280 w500")
+        This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("GroupBox", "x20 y80 h340 w500")
         This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("Text", "xp+15 yp+20 Section", "Suspend Hotkeys - Hotkey:")
+        This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("Text", "xs y+20 Section", "Char selection Screen- Hotkey:")
         This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("Text", "xs y+15", "Hotkey activation Scope:")
         This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("Text", "xs y+15", "Thumbnail Background Color:")
         This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("Text", "xs y+15", "Thumbnail Default Location:")
@@ -117,9 +118,13 @@
         This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("Text", "xs y+15", "Thumbnail Snap:")
         This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("Text", "xs y+15", "Thumbnail Snap Distance:")
         This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("Text", "xs y+15", "Minimize EVE Window Delay:")
+        This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("Text", "xs y+15", "Disable Live Thumbnail")
+        
 
-        This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("Edit", "xs+230 ys-3 w150 Section vSuspend_Hotkeys_Hotkey", This.Suspend_Hotkeys_Hotkey)
+        This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("Edit", "xs+230 ys-37 w150 Section vSuspend_Hotkeys_Hotkey", This.Suspend_Hotkeys_Hotkey)
         This.S_Gui["Suspend_Hotkeys_Hotkey"].OnEvent("Change", (obj, *) => gSettings_EventHandler(obj))
+        This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("Edit", "xp y+10 w150 Section vCharScreenHotkey", This.CharScreenHotkey)
+        This.S_Gui["CharScreenHotkey"].OnEvent("Change", (obj, *) => gSettings_EventHandler(obj))
         This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("DDL", "xp y+5 w180 vTTT vHotkey_Scoope Choose" (This.Global_Hotkeys ? 1 : 2), ["Global", "If an EVE window is Active"])
         This.S_Gui["Hotkey_Scoope"].OnEvent("Change", (obj, *) => gSettings_EventHandler(obj))
 
@@ -164,6 +169,9 @@
         This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("Edit", "xp+80 yp-3 w40 vMinimizeclients_Delay", This.Minimizeclients_Delay)
         This.S_Gui["Minimizeclients_Delay"].OnEvent("Change", (obj, *) => gSettings_EventHandler(obj))
 
+        This.S_Gui.Controls.Global_Settings.Push This.S_Gui.Add("CheckBox", "xs y+10 vDisableLiveThumbnail Checked" This.DisableLiveThumbnail)
+        This.S_Gui["DisableLiveThumbnail"].OnEvent("Click", (obj, *) => gSettings_EventHandler(obj))
+
         gSettings_EventHandler(obj) {
             if (obj.name = "Suspend_Hotkeys_Hotkey") {
                 This.Suspend_Hotkeys_Hotkey := Trim(obj.value, "`n ")
@@ -206,6 +214,14 @@
             }
             else if (obj.name = "Minimizeclients_Delay") {
                 This.Minimizeclients_Delay := obj.value
+                This.NeedRestart := 1
+            }
+            else if (obj.name = "DisableLiveThumbnail") {
+                This.DisableLiveThumbnail := obj.value
+                This.NeedRestart := 1
+            }
+            else if (obj.name = "CharScreenHotkey") {
+                This.CharScreenHotkey := obj.value
                 This.NeedRestart := 1
             }
             SetTimer(This.Save_Settings_Delay_Timer, -200)
